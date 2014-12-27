@@ -26,19 +26,27 @@ engine. Use it.
 
 Buildbot
 --------
-`Buildbot <http://buildbot.net/buildbot/docs/current>`_ is a Python system to
+
+`Buildbot <http://docs.buildbot.net/current/>`_ is a Python system to
 automate the compile/test cycle to validate code changes.
 
 
-Mule?
+Mule
 -----
 
-.. todo:: Write about Mule
+`Mule <http://www.mulesoft.org/documentation/display/current/Mule+Fundamentals>`_
+is a lightweight integration platform that enables you to connect anything,
+anywhere. You can use Mule to intelligently manage message routing, data
+mapping, orchestration, reliability, security and scalability between nodes.
+Plug other systems and applications into Mule and let it handle all the
+communication between systems, enabling you to track and monitor everything
+that happens.
+
 
 Tox
 ---
 
-`tox <https://bitbucket.org/hpk42/tox>`_ is an automation tool providing
+`tox <http://tox.readthedocs.org/en/latest/>`_ is an automation tool providing
 packaging, testing and deployment of Python software right from the console or
 CI server. It is a generic virtualenv management and test command line tool
 which provides the following features:
@@ -47,11 +55,43 @@ which provides the following features:
   interpreters
 * Running tests in each of the environments, configuring your test tool of
   choice
-* Acting as a frontend to Continuous Integration servers, reducing boilerplate
+* Acting as a front-end to Continuous Integration servers, reducing boilerplate
   and merging CI and shell-based testing.
 
 
 Travis-CI
 ---------
 
-.. todo:: Write about travis-ci
+`Travis-CI <https://travis-ci.org/>`_ is a distributed CI server which builds tests
+for open source projects for free. It provides multiple workers to run Python tests
+on and seamlessly integrates with GitHub. You can even have it comment on your Pull
+Requests whether this particular changeset breaks the build or not. So if you are
+hosting your code on GitHub, travis-ci is a great and easy way to get started with
+Continuous Integration.
+
+In order to get started, add a :file:`.travis.yml` file to your repository with this
+example content::
+
+    language: python
+    python:
+      - "2.6"
+      - "2.7"
+      - "3.2"
+      - "3.3"
+    # command to install dependencies
+    script: python tests/test_all_of_the_units.py
+    branches:
+      only:
+        - master
+
+
+This will get your project tested on all the listed Python versions by
+running the given script, and will only build the master branch. There are a
+lot more options you can enable, like notifications, before and after steps
+and much more. The `travis-ci docs <http://about.travis-ci.org/docs/>`_
+explain all of these options, and are very thorough.
+
+In order to activate testing for your project, go to `the travis-ci site <https://travis-ci.org/>`_
+and login with your GitHub account. Then activate your project in your
+profile settings and you're ready to go. From now on, your project's tests
+will be run on every push to GitHub.

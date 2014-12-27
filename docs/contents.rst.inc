@@ -29,8 +29,10 @@ This part of the guide focuses on best practices for writing Python code.
 
    writing/structure
    writing/style
+   writing/reading
    writing/documentation
    writing/tests
+   writing/gotchas
    writing/license
 
 
@@ -46,15 +48,18 @@ different scenarios.
 
    scenarios/client
    scenarios/web
+   scenarios/scrape
    scenarios/cli
    scenarios/gui
    scenarios/db
+   scenarios/network
    scenarios/admin
    scenarios/ci
    scenarios/speed
    scenarios/scientific
    scenarios/imaging
    scenarios/xml
+   scenarios/crypto
 
 
 Shipping Great Code
@@ -101,7 +106,7 @@ background information about Python, then focuses on next steps.
 
 --------------------------------------
 
-Contibution notes and legal information are here (for those interested).
+Contribution notes and legal information are here (for those interested).
 
 .. toctree::
    :maxdepth: 2

@@ -1,9 +1,23 @@
 Structuring Your Project
 ========================
 
-Structuring your project properly is extremely important.
+By "structure" we mean the decisions you make concerning
+how your project best meets its objective. We need to consider how to
+best leverage Python's features to create clean, effective code.
+In practical terms, "structure" means making clean code whose logic and
+dependencies are clear as well as how the files and folders are organized
+in the filesystem.
 
-.. todo:: Fill in "Structuring Your Project" stub
+Which functions should go into which modules? How does data flow through
+the project? What features and functions can be grouped together and
+isolated? By answering questions like these you can begin to plan, in
+a broad sense, what your finished product will look like.
+
+In this section we take a closer look at Python's module and import
+systems as they are the central elements to enforcing structure in your
+project. We then discuss various perspectives on how to build code which
+can be extended and tested reliably.
+
 
 Structure is Key
 ----------------
@@ -20,12 +34,12 @@ to do it poorly. Some signs of a poorly structured project
 include:
 
 - Multiple and messy circular dependencies: if your classes
-  Table and Chair in furn.py need to import Carpenter from workers.py
-  to answer a question such as table.isdoneby(),
+  Table and Chair in :file:`furn.py` need to import Carpenter from :file:`workers.py`
+  to answer a question such as ``table.isdoneby()``,
   and if conversely the class Carpenter needs to import Table and Chair,
-  to answer the question carpenter.whatdo(), then you
+  to answer the question ``carpenter.whatdo()``, then you
   have a circular dependency. In this case you will have to resort to
-  fragile hacks such has using import statements inside
+  fragile hacks such as using import statements inside
   methods or functions.
 
 - Hidden coupling: each and every change in Table's implementation
@@ -69,23 +83,36 @@ while another would handle low-level manipulation of data. The most natural way
 to separate these two layers is to regroup all interfacing functionality
 in one file, and all low-level operations in another file. In this case,
 the interface file needs to import the low-level file. This is done with the
-`import` and `from ... import` statements.
+``import`` and ``from ... import`` statements.
 
 As soon as you use `import` statements you use modules. These can be either built-in
 modules such as `os` and `sys`, third-party modules you have installed in your
 environment, or your project's internal modules.
 
-Nothing special is required for a Python file to be a module, but the import
-mechanism needs to be understood in order to use this concept properly and avoid
-some issues.
+To keep in line with the style guide, keep module names short, lowercase, and
+be sure to avoid using special symbols like the dot (.) or question mark (?).
+So a file name like :file:`my.spam.py` is one you should avoid! Naming this way
+will interfere with the way Python looks for modules.
 
-Concretely, the `import modu` statement will look for the proper file, which is
-`modu.py` in the same directory as the caller if it exists.  If it is not
-found, the Python interpreter will search for `modu.py` in the "path"
+In the case of `my.spam.py` Python expects to find a :file:`spam.py` file in a folder named :file:`my`
+which is not the case. There is an
+`example <http://docs.python.org/tutorial/modules.html#packages>`_ of how the
+dot notation should be used in the Python docs.
+
+If you'd like you could name your module :file:`my_spam.py`, but even our
+friend the underscore should not be seen often in module names.
+
+Aside from some naming restrictions, nothing special is required for a Python
+file to be a module, but you need to understand the import mechanism in order
+to use this concept properly and avoid some issues.
+
+Concretely, the ``import modu`` statement will look for the proper file, which is
+:file:`modu.py` in the same directory as the caller if it exists.  If it is not
+found, the Python interpreter will search for :file:`modu.py` in the "path"
 recursively and raise an ImportError exception if it is not found.
 
-Once `modu.py` is found, the Python interpreter will execute the module in an
-isolated scope. Any top-level statement in `modu.py` will be executed,
+Once :file:`modu.py` is found, the Python interpreter will execute the module in an
+isolated scope. Any top-level statement in :file:`modu.py` will be executed,
 including other imports if any. Function and class definitions are stored in
 the module's dictionary.
 
@@ -93,21 +120,21 @@ Then, the module's variables, functions, and classes will be available to the ca
 through the module's namespace, a central concept in programming that is
 particularly helpful and powerful in Python.
 
-In many languages, an `include file` directive is used by the preprocessor to
+In many languages, an ``include file`` directive is used by the preprocessor to
 take all code found in the file and 'copy' it into the caller's code. It is
 different in Python: the included code is isolated in a module namespace, which
 means that you generally don't have to worry that the included code could have
 unwanted effects, e.g. override an existing function with the same name.
 
 It is possible to simulate the more standard behavior by using a special syntax
-of the import statement: `from modu import *`. This is generally considered bad
-practice. **Using `import *` makes code harder to read and makes dependencies less
+of the import statement: ``from modu import *``. This is generally considered bad
+practice. **Using** ``import *`` **makes code harder to read and makes dependencies less
 compartmentalized**.
 
-Using `from modu import func` is a way to pinpoint the function you want to
-import and put it in the global namespace. While much less harmful than `import
-*` because it shows explicitly what is imported in the global namespace, its
-advantage over a simpler `import modu` is only that it will save some typing.
+Using ``from modu import func`` is a way to pinpoint the function you want to
+import and put it in the global namespace. While much less harmful than ``import
+*`` because it shows explicitly what is imported in the global namespace, its
+only advantage over a simpler ``import modu`` is that it will save a little typing.
 
 **Very bad**
 
@@ -134,12 +161,12 @@ advantage over a simpler `import modu` is only that it will save some typing.
     [...]
     x = modu.sqrt(4)  # sqrt is visibly part of modu's namespace
 
-As said in the section about style, readability is one of the main features of
-Python. Readability means to avoid useless boilerplate text and clutter,
-therefore some efforts are spent trying to achieve a certain level of brevity.
-But terseness and obscurity are the limits where brevity should stop. Being
-able to tell immediately where a class or function comes from, as in the
-`modu.func` idiom, greatly improves code readability and understandability in
+As mentioned in the :ref:`code_style` section, readability is one of the main
+features of Python. Readability means to avoid useless boilerplate text and
+clutter, therefore some efforts are spent trying to achieve a certain level of
+brevity. But terseness and obscurity are the limits where brevity should stop.
+Being able to tell immediately where a class or function comes from, as in the
+``modu.func`` idiom, greatly improves code readability and understandability in
 all but the simplest single file projects.
 
 
@@ -149,29 +176,29 @@ Packages
 Python provides a very straightforward packaging system, which is simply an
 extension of the module mechanism to a directory.
 
-Any directory with an __init__.py file is considered a Python package. The
+Any directory with an :file:`__init__.py` file is considered a Python package. The
 different modules in the package are imported in a similar manner as plain
-modules, but with a special behavior for the __init__.py file, which is used to
+modules, but with a special behavior for the :file:`__init__.py` file, which is used to
 gather all package-wide definitions.
 
-A file modu.py in the directory pack/ is imported with the statement `import
-pack.modu`. This statement will look for an __init__.py file in `pack`, execute
-all of its top-level statements. Then it will look for a file `pack/modu.py` and
+A file :file:`modu.py` in the directory :file:`pack/` is imported with the statement ``import
+pack.modu``. This statement will look for an :file:`__init__.py` file in :file:`pack`, execute
+all of its top-level statements. Then it will look for a file named :file:`pack/modu.py` and
 execute all of its top-level statements. After these operations, any variable,
-function, or class defined in modu.py is available in the pack.modu namespace.
+function, or class defined in :file:`modu.py` is available in the pack.modu namespace.
 
-A commonly seen issue is to add too much code to __init__.py
+A commonly seen issue is to add too much code to :file:`__init__.py`
 files. When the project complexity grows, there may be sub-packages and
-sub-sub-packages in a deep directory structure, and then, importing a single item
-from a sub-sub-package will require executing all __init__.py files met while
+sub-sub-packages in a deep directory structure. In this case, importing a single item
+from a sub-sub-package will require executing all :file:`__init__.py` files met while
 traversing the tree.
 
-Leaving an __init__.py file empty is considered normal and even a good practice,
+Leaving an :file:`__init__.py` file empty is considered normal and even a good practice,
 if the package's modules and sub-packages do not need to share any code.
 
 Lastly, a convenient syntax is available for importing deeply nested packages:
-`import very.deep.module as mod`. This allows you to use `mod` in place of the verbose
-repetition of `very.deep.module`.
+``import very.deep.module as mod``. This allows you to use `mod` in place of the verbose
+repetition of ``very.deep.module``.
 
 Object-oriented programming
 ---------------------------
@@ -180,7 +207,7 @@ Python is sometimes described as an object-oriented programming language. This
 can be somewhat misleading and needs to be clarified.
 
 In Python, everything is an object, and can be handled as such. This is what is
-meant when we say that, for example, functions are first-class objects.
+meant when we say, for example, that functions are first-class objects.
 Functions, classes, strings, and even types are objects in Python: like any
 objects, they have a type, they can be passed as function arguments, they may
 have methods and properties. In this understanding, Python is an
@@ -209,11 +236,11 @@ processes are spawned to respond to external requests that can
 happen at the same time. In this case, holding some state into instantiated
 objects, which means keeping some static information about the world, is prone
 to concurrency problems or race-conditions. Sometimes, between the initialization of
-the state of an object (usually done with the __init__() method) and the actual use
+the state of an object (usually done with the ``__init__()`` method) and the actual use
 of the object state through one of its methods, the world may have changed, and
 the retained state may be outdated. For example, a request may load an item in
 memory and mark it as read by a user. If another request requires the deletion
-of this item at the same, it may happen that the deletion actually occurs after
+of this item at the same time, it may happen that the deletion actually occurs after
 the first process loaded the item, and then we have to mark as read a deleted
 object.
 
@@ -224,13 +251,13 @@ Another way to say the same thing is to suggest using functions and procedures
 with as few implicit contexts and side-effects as possible. A function's
 implicit context is made up of any of the global variables or items in the persistence layer
 that are accessed from within the function. Side-effects are the changes that a function makes
-to it's implicit context. If a function saves or deletes data in a global variable or
+to its implicit context. If a function saves or deletes data in a global variable or
 in the persistence layer, it is said to have a side-effect.
 
 Carefully isolating functions with context and side-effects from functions with
 logic (called pure functions) allow the following benefits:
 
-- Pure functions are more likely to be deterministic: given a fixed input,
+- Pure functions are deterministic: given a fixed input,
   the output will always be the same.
 
 - Pure functions are much easier to change or replace if they need to
@@ -239,10 +266,10 @@ logic (called pure functions) allow the following benefits:
 - Pure functions are easier to test with unit-tests: There is less
   need for complex context setup and data cleaning afterwards.
 
-- Pure functions are easier to manipulate, decorate_, and pass-around.
+- Pure functions are easier to manipulate, decorate, and pass around.
 
-In summary, pure functions, without any context or side-effects, are more
-efficient building blocks than classes and objects for some architectures.
+In summary, pure functions are more efficient building blocks than classes
+and objects for some architectures because they have no context or side-effects.
 
 Obviously, object-orientation is useful and even necessary in many cases, for
 example when developing graphical desktop applications or games, where the
@@ -254,10 +281,10 @@ Decorators
 ----------
 
 The Python language provides a simple yet powerful syntax called 'decorators'.
-A decorator is a function or a class that wraps (or decorate) a function
+A decorator is a function or a class that wraps (or decorates) a function
 or a method. The 'decorated' function or method will replace the original
 'undecorated' function or method. Because functions are first-class objects
-in Python, it can be done 'manually', but using the @decorator syntax is
+in Python, this can be done 'manually', but using the @decorator syntax is
 clearer and thus preferred.
 
 .. code-block:: python
@@ -276,7 +303,7 @@ clearer and thus preferred.
         # Do something
     # bar() is decorated
 
-Using this mechanism is useful for separating concerns and avoiding
+This mechanism is useful for separating concerns and avoiding
 external un-related logic 'polluting' the core logic of the function
 or method. A good example of a piece of functionality that is better handled
 with decoration is memoization or caching: you want to store the results of an
@@ -287,10 +314,10 @@ of the function logic.
 Dynamic typing
 --------------
 
-Python is said to be dynamically typed, which means that variables
+Python is dynamically typed, which means that variables
 do not have a fixed type. In fact, in Python, variables are very
 different from what they are in many other languages, specifically
-strongly-typed languages. Variables are not a segment of the computer's
+statically-typed languages. Variables are not a segment of the computer's
 memory where some value is written, they are 'tags' or 'names' pointing
 to objects. It is therefore possible for the variable 'a' to be set to
 the value 1, then to the value 'a string', then to a function.
@@ -303,7 +330,7 @@ been set to a completely unrelated object.
 
 Some guidelines help to avoid this issue:
 
-- Avoid using variables for different things.
+- Avoid using the same variable name for different things.
 
 **Bad**
 
@@ -320,7 +347,7 @@ Some guidelines help to avoid this issue:
 
     count = 1
     msg = 'a string'
-    def func()
+    def func():
         pass  # Do something
 
 Using short functions or methods helps reduce the risk
@@ -356,7 +383,7 @@ Python has two kinds of built-in or user-defined types.
 
 Mutable types are those that allow in-place modification
 of the content. Typical mutables are lists and dictionaries:
-All lists have mutating methods, like append() or pop(), and
+All lists have mutating methods, like :py:meth:`list.append` or :py:meth:`list.pop`, and
 can be modified in place. The same goes for dictionaries.
 
 Immutable types provide no method for changing their content.
@@ -389,11 +416,72 @@ One peculiarity of Python that can surprise beginners is that
 strings are immutable. This means that when constructing a string from
 its parts, it is much more efficient to accumulate the parts in a list,
 which is mutable, and then glue ('join') the parts together when the
-full string is needed.
+full string is needed. One thing to notice, however, is that list
+comprehensions are better and faster than constructing a list in a loop
+with calls to ``append()``.
+
+**Bad**
+
+.. code-block:: python
+
+    # create a concatenated string from 0 to 19 (e.g. "012..1819")
+    nums = ""
+    for n in range(20):
+      nums += str(n)   # slow and inefficient
+    print nums
+
+**Good**
+
+.. code-block:: python
+
+    # create a concatenated string from 0 to 19 (e.g. "012..1819")
+    nums = []
+    for n in range(20):
+      nums.append(str(n))
+    print "".join(nums)  # much more efficient
+
+**Best**
+
+.. code-block:: python
+
+    # create a concatenated string from 0 to 19 (e.g. "012..1819")
+    nums = [str(n) for n in range(20)]
+    print "".join(nums)
+
+One final thing to mention about strings is that using ``join()`` is not always
+best. In the instances where you are creating a new string from a pre-determined
+number of strings, using the addition operator is actually faster, but in cases
+like above or in cases where you are adding to an existing string, using ``join()``
+should be your preferred method.
+
+.. code-block:: python
+
+    foo = 'foo'
+    bar = 'bar'
+
+    foobar = foo + bar  # This is good
+    foo += 'ooo'  # This is bad, instead you should do:
+    foo = ''.join([foo, 'ooo'])
+
+.. note::
+    You can also use the :ref:`% <python:string-formatting>` formatting operator
+    to concatenate a pre-determined number of strings besides :py:meth:`str.join`
+    and ``+``. However, according to :pep:`3101`, the ``%`` operator became
+    deprecated in Python 3.1 and will be replaced by the :py:meth:`str.format`
+    method in the later versions.
+
+.. code-block:: python
+
+    foo = 'foo'
+    bar = 'bar'
+
+    foobar = '%s%s' % (foo, bar) # It is OK
+    foobar = '{0}{1}'.format(foo, bar) # It is better
+    foobar = '{foo}{bar}'.format(foo=foo, bar=bar) # It is best
+
 
 Vendorizing Dependencies
 ------------------------
-
 
 
 Runners
@@ -402,3 +490,6 @@ Runners
 
 Further Reading
 ---------------
+
+- http://docs.python.org/2/library/
+- http://www.diveintopython.net/toc/index.html
